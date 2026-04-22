@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import { MockAuthStrategy } from './infra/repository/mock/mockAuthStrategy';
-import { BarcodeMockRepository } from './infra/repository/mock/barcodeMockRepository';
-import { RoomMockRepository } from './infra/repository/mock/roomMockRepository';
 import { MockTokenService } from './infra/repository/mock/tokenServiceMock';
-import { UserMockRepository } from './infra/repository/mock/userMockRepository';
-import { PrismaService } from './infra/prisma/prismaService';
-import { PrismaBarcodeRepository } from './infra/repository/prismaBarcodeRepository';
-import { PrismaRoomRepository } from './infra/repository/prismaRoomRepository';
-import { PrismaUserRepository } from './infra/repository/prismaUserRepository';
 import { AuthController } from './interface/cli/controller/authController';
 import { BarcodeController } from './interface/cli/controller/barcodeController';
 import { RoomController } from './interface/cli/controller/roomController';
@@ -21,45 +13,44 @@ import { AuthService } from './service/authService';
 import { BarcodeService } from './service/barcodeService';
 import { RoomService } from './service/roomService';
 import { UserService } from './service/userSerivice';
-import type { UserRepository } from './repository/userRepository';
-import type { RoomRepository } from './repository/roomRepository';
-import type { BarcodeRepository } from './repository/barcodeRepository';
+import {
+  createRepositories,
+  DB_BACKENDS,
+  type DbBackend,
+} from './factory/repositoryFactory';
+import {
+  createAuthStrategy,
+  AUTH_STRATEGIES,
+  type AuthStrategyType,
+} from './factory/authStrategyFactory';
 
-const VALID_DBS = ['mock', 'postgres'] as const;
-type DbBackend = (typeof VALID_DBS)[number];
-
-const dbArg = process.argv.find((a) => a.startsWith('--db='));
-const db = (dbArg ? dbArg.split('=')[1] : 'mock') as DbBackend;
-
-if (!VALID_DBS.includes(db)) {
-  console.error(
-    `Invalid --db value "${db}". Valid options: ${VALID_DBS.join(', ')}`,
-  );
-  process.exit(1);
+function parseFlag<T extends string>(
+  flag: string,
+  valid: readonly T[],
+  defaultValue: T,
+): T {
+  const arg = process.argv.find((a) => a.startsWith(`--${flag}=`));
+  if (!arg) return defaultValue;
+  const value = arg.split('=')[1] as T;
+  if (!valid.includes(value)) {
+    console.error(
+      `Invalid --${flag} value "${value}". Valid options: ${valid.join(', ')}`,
+    );
+    process.exit(1);
+  }
+  return value;
 }
 
+const db = parseFlag<DbBackend>('db', DB_BACKENDS, 'mock');
+const auth = parseFlag<AuthStrategyType>('auth', AUTH_STRATEGIES, 'mock');
+
 (async () => {
-  let userRepo: UserRepository;
-  let roomRepo: RoomRepository;
-  let barcodeRepo: BarcodeRepository;
-  let prisma: PrismaService | undefined;
+  const { userRepo, roomRepo, barcodeRepo, prisma } =
+    await createRepositories(db);
+  console.log(`[DB]   ${db}`);
+  console.log(`[Auth] ${auth}`);
 
-  if (db === 'postgres') {
-    prisma = new PrismaService();
-    await prisma.$connect();
-    userRepo = new PrismaUserRepository(prisma);
-    roomRepo = new PrismaRoomRepository(prisma);
-    barcodeRepo = new PrismaBarcodeRepository(prisma);
-    console.log('[DB] Connected to PostgreSQL');
-  } else {
-    userRepo = new UserMockRepository();
-    roomRepo = new RoomMockRepository();
-    barcodeRepo = new BarcodeMockRepository();
-    console.log('[DB] Using in-memory mock');
-  }
-
-  // Auth / token always use mock in CLI mode
-  const authStrategy = new MockAuthStrategy();
+  const authStrategy = createAuthStrategy(auth);
   const tokenService = new MockTokenService();
 
   // Domain services
@@ -84,24 +75,20 @@ if (!VALID_DBS.includes(db)) {
     barcodeView,
   );
 
-  // Graceful shutdown for Prisma connections
+  // Graceful shutdown
   if (prisma) {
-    process.on('SIGINT', async () => {
-      await prisma!.$disconnect();
+    const shutdown = async () => {
+      await prisma.$disconnect();
       process.exit(0);
-    });
-    process.on('SIGTERM', async () => {
-      await prisma!.$disconnect();
-      process.exit(0);
-    });
+    };
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
   }
 
-  // Start CLI
-  const router = new Router()
+  new Router()
     .register(authController)
     .register(userController)
     .register(roomController)
-    .register(barcodeController);
-
-  router.start();
+    .register(barcodeController)
+    .start();
 })();
