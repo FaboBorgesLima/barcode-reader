@@ -1,21 +1,21 @@
-import { MockAuthStrategy } from "./db/mock/mockAuthStrategy";
-import { BarcodeMockRepository } from "./db/mock/barcodeMockRepository";
-import { RoomMockRepository } from "./db/mock/roomMockRepository";
-import { MockTokenService } from "./db/mock/tokenServiceMock";
-import { UserMockRepository } from "./db/mock/userMockRepository";
-import { AuthController } from "./interface/cli/controller/authController";
-import { BarcodeController } from "./interface/cli/controller/barcodeController";
-import { RoomController } from "./interface/cli/controller/roomController";
-import { UserController } from "./interface/cli/controller/userController";
-import { Router } from "./interface/cli/router";
-import { AuthView } from "./interface/cli/view/authView";
-import { BarcodeView } from "./interface/cli/view/barcodeView";
-import { RoomView } from "./interface/cli/view/roomView";
-import { UserView } from "./interface/cli/view/userView";
-import { AuthService } from "./service/authService";
-import { BarcodeService } from "./service/barcodeService";
-import { RoomService } from "./service/roomService";
-import { UserService } from "./service/userSerivice";
+import { MockAuthStrategy } from './infra/repository/mock/mockAuthStrategy';
+import { BarcodeMockRepository } from './infra/repository/mock/barcodeMockRepository';
+import { RoomMockRepository } from './infra/repository/mock/roomMockRepository';
+import { MockTokenService } from './infra/repository/mock/tokenServiceMock';
+import { UserMockRepository } from './infra/repository/mock/userMockRepository';
+import { AuthController } from './interface/cli/controller/authController';
+import { BarcodeController } from './interface/cli/controller/barcodeController';
+import { RoomController } from './interface/cli/controller/roomController';
+import { UserController } from './interface/cli/controller/userController';
+import { Router } from './interface/cli/router';
+import { AuthView } from './interface/cli/view/authView';
+import { BarcodeView } from './interface/cli/view/barcodeView';
+import { RoomView } from './interface/cli/view/roomView';
+import { UserView } from './interface/cli/view/userView';
+import { AuthService } from './service/authService';
+import { BarcodeService } from './service/barcodeService';
+import { RoomService } from './service/roomService';
+import { UserService } from './service/userSerivice';
 
 // Repositories
 const userRepo = new UserMockRepository();
@@ -43,16 +43,16 @@ const authController = new AuthController(authService, authView);
 const userController = new UserController(userService, userView);
 const roomController = new RoomController(roomService, roomView);
 const barcodeController = new BarcodeController(
-    barcodeService,
-    roomService,
-    barcodeView,
+  barcodeService,
+  roomService,
+  barcodeView,
 );
 
 // Start CLI
 const router = new Router()
-    .register(authController)
-    .register(userController)
-    .register(roomController)
-    .register(barcodeController);
+  .register(authController)
+  .register(userController)
+  .register(roomController)
+  .register(barcodeController);
 
 router.start();

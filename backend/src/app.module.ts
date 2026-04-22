@@ -1,0 +1,30 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './module/prismaModule';
+import { AuthModule } from './module/authModule';
+import { UserModule } from './module/userModule';
+import { RoomModule } from './module/roomModule';
+import { BarcodeModule } from './module/barcodeModule';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis from '@keyv/redis';
+import { Keyv } from 'keyv';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    AuthModule,
+    UserModule,
+    RoomModule,
+    BarcodeModule,
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => {
+        return {
+          stores: [new KeyvRedis(process.env.REDIS_URL)],
+        };
+      },
+    }),
+  ],
+})
+export class AppModule {}

@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  rooms Room[]
+}
+
+model Room {
+  id       String    @id @default(uuid())
+  name     String
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barcodes Barcode[]
+}
+
+model Barcode {
+  id       String @id @default(uuid())
+  value    String
+  roomId   String
+  quantity Int    @default(1)
+  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+}

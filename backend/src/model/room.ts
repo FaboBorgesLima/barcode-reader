@@ -1,19 +1,30 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class Room {
-    public constructor(
-        public id: string | undefined,
-        public name: string,
-        public userId: string,
-    ) {}
+  @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  public id: string | undefined;
 
-    public update(name?: string): Room {
-        const copy = this.copy();
+  @ApiProperty({ example: 'Warehouse A' })
+  public name: string;
 
-        copy.name = name ?? this.name;
+  @ApiProperty({ example: 'u1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  public userId: string;
 
-        return copy;
-    }
+  public constructor(id: string | undefined, name: string, userId: string) {
+    this.id = id;
+    this.name = name;
+    this.userId = userId;
+  }
 
-    public copy(): Room {
-        return new Room(this.id, this.name, this.userId);
-    }
+  public update(name?: string): Room {
+    const copy = this.copy();
+
+    copy.name = name ?? this.name;
+
+    return copy;
+  }
+
+  public copy(): Room {
+    return new Room(this.id, this.name, this.userId);
+  }
 }
