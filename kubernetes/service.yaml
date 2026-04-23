@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: barcode-scanner-service
+spec:
+    selector:
+        app: barcode-scanner
+    ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 3000

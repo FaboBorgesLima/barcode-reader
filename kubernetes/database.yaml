@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+    name: barcode-scanner-db
+spec:
+    name: barcode_scanner
+    owner: barcode-scanner-user
+    cluster:
+        name: default-cluster
+    ensure: present

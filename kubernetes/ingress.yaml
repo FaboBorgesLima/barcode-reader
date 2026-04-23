@@ -1,0 +1,17 @@
+# IngressRoute Backend
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+    name: barcode-scanner-ingressroute
+    namespace: default
+spec:
+    entryPoints:
+        - websecure
+    routes:
+        - match: Host(`scanner.titanforgesystems.com.br`) && PathPrefix(`/`)
+          kind: Rule
+          services:
+              - name: barcode-scanner-service
+                port: 80
+    tls:
+        certResolver: le

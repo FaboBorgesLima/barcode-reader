@@ -10,6 +10,7 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 import { AuthService } from '../../../service/authService';
 import { JwtAuthGuard } from '../../../infra/auth/jwtAuthGuard';
 import { CurrentToken } from '../../../infra/auth/currentUser';
+import { EmailRateLimiterGuard } from '../../../infra/auth/emailRateLimiterGuard';
 
 export class InitiateAuthDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -56,9 +57,14 @@ export class AuthHttpController {
 
   @Post('initiate')
   @HttpCode(204)
+  @UseGuards(EmailRateLimiterGuard)
   @ApiOperation({ summary: 'Send OTP to the given email address' })
   @ApiResponse({ status: 204, description: 'OTP sent successfully' })
   @ApiResponse({ status: 400, description: 'Invalid email' })
+  @ApiResponse({
+    status: 429,
+    description: 'Too many requests — rate limit exceeded',
+  })
   async initiate(@Body() dto: InitiateAuthDto): Promise<void> {
     await this.authService.initiateAuth(dto.email);
   }

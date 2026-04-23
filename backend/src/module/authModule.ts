@@ -9,6 +9,7 @@ import { PrismaUserRepository } from '../infra/repository/prismaUserRepository';
 import { AuthService } from '../service/authService';
 import { AuthHttpController } from '../interface/http/controller/authHttpController';
 import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
+import { EmailRateLimiterGuard } from '../infra/auth/emailRateLimiterGuard';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
       useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
       inject: [JwtTokenService],
     },
+    EmailRateLimiterGuard,
   ],
   exports: [JwtTokenService, JwtAuthGuard],
 })

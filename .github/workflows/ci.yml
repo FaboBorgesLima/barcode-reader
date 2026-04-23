@@ -1,0 +1,127 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    workflow_call:
+    workflow_dispatch:
+
+jobs:
+    # ── Security audit ────────────────────────────────────────────────────────
+    audit:
+        name: Security Audit (npm)
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: backend
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+                  cache-dependency-path: backend/package-lock.json
+            - run: npm ci
+            - name: Audit dependencies
+              run: npm audit --audit-level=high
+
+    # ── Lint ──────────────────────────────────────────────────────────────────
+    lint:
+        name: Lint (ESLint)
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: backend
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+                  cache-dependency-path: backend/package-lock.json
+            - run: npm ci
+            - name: Run ESLint
+              run: npm run lint
+
+    # ── Backend unit tests ────────────────────────────────────────────────────
+    test_backend:
+        name: Backend Tests (Jest)
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: backend
+
+        services:
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: barcode_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd="pg_isready"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=3
+            redis:
+                image: redis:7-alpine
+                ports:
+                    - 6379:6379
+                options: >-
+                    --health-cmd="redis-cli ping"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+                  cache-dependency-path: backend/package-lock.json
+            - run: npm ci
+            - name: Run Prisma migrations
+              env:
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/barcode_test
+              run: npx prisma migrate deploy
+            - name: Run unit tests
+              env:
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/barcode_test
+                  REDIS_URL: redis://localhost:6379
+                  JWT_SECRET: test-secret
+                  AUTH_STRATEGY: mock
+              run: npm test -- --forceExit
+
+    # ── Android build ─────────────────────────────────────────────────────────
+    build_android:
+        name: Android Build
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: BarCodeScannerAndSheetExport
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: 17
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v4
+            - name: Build debug APK
+              env:
+                  # Point to the real API during the build; value is injected into BuildConfig
+                  API_BASE_URL: https://scanner.titanforgesystems.com.br/api/
+              run: |
+                  echo "api.base.url=${API_BASE_URL}" >> local.properties
+                  ./gradlew assembleDebug --no-daemon
+            - name: Upload APK
+              uses: actions/upload-artifact@v4
+              with:
+                  name: debug-apk
+                  path: BarCodeScannerAndSheetExport/app/build/outputs/apk/debug/*.apk

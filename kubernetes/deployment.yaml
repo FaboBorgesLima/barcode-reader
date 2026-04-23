@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: barcode-scanner-deployment
+    labels:
+        app: barcode-scanner
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: barcode-scanner
+    template:
+        metadata:
+            labels:
+                app: barcode-scanner
+        spec:
+            containers:
+                - name: barcode-scanner
+                  image: faboborgeslima/barcode-scanner:VERSION
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 3000
+                  envFrom:
+                      - secretRef:
+                            name: barcode-scanner-secrets
+                  readinessProbe:
+                      httpGet:
+                          path: /api/docs
+                          port: 3000
+                      initialDelaySeconds: 10
+                      periodSeconds: 10
+                  livenessProbe:
+                      httpGet:
+                          path: /api/docs
+                          port: 3000
+                      initialDelaySeconds: 30
+                      periodSeconds: 30
+                  resources:
+                      requests:
+                          cpu: "100m"
+                          memory: "256Mi"
+                      limits:
+                          cpu: "500m"
+                          memory: "512Mi"
+
+---
