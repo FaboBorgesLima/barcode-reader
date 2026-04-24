@@ -44,4 +44,4 @@ COPY prisma ./prisma
 EXPOSE 3000
 
 # Run migrations then start the pre-compiled app — no TypeScript compiler involved
-CMD ["sh", "-c", "node dist/main"]
+CMD ["sh", "-c", "node dist/main.js"]
