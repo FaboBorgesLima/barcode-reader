@@ -5,7 +5,9 @@ import { AppModule } from './app.module';
 import { DomainExceptionFilter } from './infra/filter/domainExceptionFilter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'warn', 'error', 'debug', 'verbose', 'fatal'],
+  });
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.setGlobalPrefix('api');
