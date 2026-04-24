@@ -36,6 +36,7 @@ describe('createRepositories()', () => {
     it('calls $connect and returns a prisma instance', async () => {
       const result = await createRepositories('postgres');
       expect(result.prisma).toBeDefined();
+
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const { $connect } = jest.mocked(result.prisma!);
       expect($connect).toHaveBeenCalled();
