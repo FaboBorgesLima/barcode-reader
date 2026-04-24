@@ -25,13 +25,13 @@ spec:
                             name: barcode-scanner-secrets
                   readinessProbe:
                       httpGet:
-                          path: /api/docs
+                          path: /api/health
                           port: 3000
                       initialDelaySeconds: 10
                       periodSeconds: 10
                   livenessProbe:
                       httpGet:
-                          path: /api/docs
+                          path: /api/health
                           port: 3000
                       initialDelaySeconds: 30
                       periodSeconds: 30

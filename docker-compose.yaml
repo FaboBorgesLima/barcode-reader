@@ -9,9 +9,10 @@ services:
       POSTGRES_PASSWORD: barcode
       POSTGRES_DB: barcode_scanner
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
+      target: dev
     command:
       sh -c "npx prisma migrate deploy && npm run start:dev"
     ports:

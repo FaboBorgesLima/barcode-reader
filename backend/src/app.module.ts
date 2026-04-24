@@ -5,6 +5,7 @@ import { AuthModule } from './module/authModule';
 import { UserModule } from './module/userModule';
 import { RoomModule } from './module/roomModule';
 import { BarcodeModule } from './module/barcodeModule';
+import { HealthModule } from './module/healthModule';
 import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis from '@keyv/redis';
 
@@ -16,6 +17,7 @@ import KeyvRedis from '@keyv/redis';
     UserModule,
     RoomModule,
     BarcodeModule,
+    HealthModule,
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: () => ({
