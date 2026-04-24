@@ -1,5 +1,5 @@
 // WeakMap-based metadata registry — no reflect-metadata dependency needed
-type Constructor = abstract new (...args: unknown[]) => unknown;
+export type Constructor = abstract new (...args: unknown[]) => unknown;
 
 const domainRegistry = new WeakMap<Constructor, string>();
 

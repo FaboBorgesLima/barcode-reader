@@ -1,5 +1,9 @@
 import { createInterface } from 'node:readline';
-import { getDomain, getCommands } from '../../lib/cliDecorators';
+import {
+  getDomain,
+  getCommands,
+  type Constructor,
+} from '../../lib/cliDecorators';
 
 type Handler = (args: string[]) => Promise<void>;
 
@@ -20,7 +24,7 @@ export class Router {
   }
 
   public register(controller: object): this {
-    const domain = getDomain(controller.constructor);
+    const domain = getDomain(controller.constructor as Constructor);
     if (!domain)
       throw new Error(
         `${controller.constructor.name} is missing @CliController decorator`,
