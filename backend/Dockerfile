@@ -40,6 +40,8 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 # Migrations (needed for migrate deploy at startup)
 COPY prisma ./prisma
+# Prisma config (provides datasource.url from DATABASE_URL env var)
+COPY prisma.config.ts ./
 
 EXPOSE 3000
 
