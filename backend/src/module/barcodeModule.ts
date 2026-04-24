@@ -10,21 +10,23 @@ import { JwtTokenService } from '../infra/auth/jwtTokenService';
 import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
 
 @Module({
-    imports: [PrismaModule, AuthModule, RoomModule],
-    controllers: [BarcodeHttpController],
-    providers: [
-        PrismaBarcodeRepository,
-        {
-            provide: BarcodeService,
-            useFactory: (barcodeRepo: PrismaBarcodeRepository, roomService: RoomService) =>
-                new BarcodeService(barcodeRepo, roomService),
-            inject: [PrismaBarcodeRepository, RoomService],
-        },
-        {
-            provide: JwtAuthGuard,
-            useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
-            inject: [JwtTokenService],
-        },
-    ],
+  imports: [PrismaModule, AuthModule, RoomModule],
+  controllers: [BarcodeHttpController],
+  providers: [
+    PrismaBarcodeRepository,
+    {
+      provide: BarcodeService,
+      useFactory: (
+        barcodeRepo: PrismaBarcodeRepository,
+        roomService: RoomService,
+      ) => new BarcodeService(barcodeRepo, roomService),
+      inject: [PrismaBarcodeRepository, RoomService],
+    },
+    {
+      provide: JwtAuthGuard,
+      useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
+      inject: [JwtTokenService],
+    },
+  ],
 })
 export class BarcodeModule {}

@@ -15,7 +15,8 @@ export class MockTokenService implements TokenService {
     return { userId, email };
   }
 
-  async revokeToken(token: string): Promise<void> {
+  revokeToken(token: string): Promise<void> {
     this.revoked.add(token);
+    return Promise.resolve();
   }
 }

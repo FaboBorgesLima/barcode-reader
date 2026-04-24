@@ -1,9 +1,7 @@
 import { Barcode } from './barcode';
 
 describe('Barcode', () => {
-  const make = (
-    overrides?: Partial<ConstructorParameters<typeof Barcode>[0]>,
-  ) => new Barcode('id-1', 'ABC123', 'room-1', 2);
+  const make = () => new Barcode('id-1', 'ABC123', 'room-1', 2);
 
   describe('constructor', () => {
     it('sets all fields', () => {

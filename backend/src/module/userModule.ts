@@ -8,20 +8,20 @@ import { JwtTokenService } from '../infra/auth/jwtTokenService';
 import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
 
 @Module({
-    imports: [PrismaModule, AuthModule],
-    controllers: [UserHttpController],
-    providers: [
-        PrismaUserRepository,
-        {
-            provide: UserService,
-            useFactory: (repo: PrismaUserRepository) => new UserService(repo),
-            inject: [PrismaUserRepository],
-        },
-        {
-            provide: JwtAuthGuard,
-            useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
-            inject: [JwtTokenService],
-        },
-    ],
+  imports: [PrismaModule, AuthModule],
+  controllers: [UserHttpController],
+  providers: [
+    PrismaUserRepository,
+    {
+      provide: UserService,
+      useFactory: (repo: PrismaUserRepository) => new UserService(repo),
+      inject: [PrismaUserRepository],
+    },
+    {
+      provide: JwtAuthGuard,
+      useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
+      inject: [JwtTokenService],
+    },
+  ],
 })
 export class UserModule {}

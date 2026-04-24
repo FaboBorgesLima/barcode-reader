@@ -1,7 +1,6 @@
 import { RoomService } from './roomService';
 import { RoomMockRepository } from '../infra/repository/mock/roomMockRepository';
 import { Room } from '../model/room';
-import { DomainError } from '../error/domainError';
 
 describe('RoomService', () => {
   let repo: RoomMockRepository;

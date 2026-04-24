@@ -1,10 +1,10 @@
 export interface TokenPayload {
-    userId: string;
-    email: string;
+  userId: string;
+  email: string;
 }
 
 export interface TokenService {
-    generateToken(payload: TokenPayload): string;
-    verifyToken(token: string): TokenPayload;
-    revokeToken(token: string): Promise<void>;
+  generateToken(payload: TokenPayload): string;
+  verifyToken(token: string): TokenPayload;
+  revokeToken(token: string): Promise<void>;
 }

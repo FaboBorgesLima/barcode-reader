@@ -5,28 +5,29 @@ import { UserRepository } from '../../../repository/userRepository';
 export class UserMockRepository implements UserRepository {
   private store = new Map<string, User>();
 
-  async getUserByEmail(email: string): Promise<User | null> {
+  getUserByEmail(email: string): Promise<User | null> {
     for (const user of this.store.values())
-      if (user.email === email) return user;
-    return null;
+      if (user.email === email) return Promise.resolve(user);
+    return Promise.resolve(null);
   }
 
-  async getUserById(id: string): Promise<User | null> {
-    return this.store.get(id) ?? null;
+  getUserById(id: string): Promise<User | null> {
+    return Promise.resolve(this.store.get(id) ?? null);
   }
 
-  async createUser(user: User): Promise<User> {
+  createUser(user: User): Promise<User> {
     const created = new User(randomUUID(), user.name, user.email);
     this.store.set(created.id!, created);
-    return created;
+    return Promise.resolve(created);
   }
 
-  async updateUser(user: User): Promise<User> {
+  updateUser(user: User): Promise<User> {
     this.store.set(user.id!, user);
-    return user;
+    return Promise.resolve(user);
   }
 
-  async deleteUser(id: string): Promise<void> {
+  deleteUser(id: string): Promise<void> {
     this.store.delete(id);
+    return Promise.resolve();
   }
 }

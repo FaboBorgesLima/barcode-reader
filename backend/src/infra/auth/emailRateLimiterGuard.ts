@@ -24,7 +24,9 @@ export class EmailRateLimiterGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
-    const email: string | undefined = req.body?.email;
+    const rawBody = req.body as Record<string, unknown>;
+    const email =
+      typeof rawBody?.email === 'string' ? rawBody.email : undefined;
 
     // Let the validation layer handle missing/invalid email
     if (!email || typeof email !== 'string') return true;

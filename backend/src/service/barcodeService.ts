@@ -45,7 +45,7 @@ export class BarcodeService {
   }
 
   public async createBarcode(roomId: string, data: string): Promise<Barcode> {
-    let barcode = new Barcode(undefined, data, roomId);
+    const barcode = new Barcode(undefined, data, roomId);
 
     if ((await this.barcodeRepository.countBarcodes(roomId)) >= 100)
       throw new DomainError(

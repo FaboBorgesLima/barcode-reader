@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
-import * as nodemailer from 'nodemailer';
+import { createTransport } from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 import { AuthStrategy } from '../../service/authStrategy';
 
 interface PendingOtp {
@@ -18,12 +19,12 @@ interface SmtpConfig {
 
 export class NodemailerOtpAuthStrategy implements AuthStrategy {
   private readonly pending = new Map<string, PendingOtp>();
-  private readonly transporter: nodemailer.Transporter;
+  private readonly transporter: Transporter;
   private readonly from: string;
 
   public constructor(config: SmtpConfig) {
     this.from = config.from;
-    this.transporter = nodemailer.createTransport({
+    this.transporter = createTransport({
       host: config.host,
       port: config.port,
       secure: config.secure,
@@ -74,7 +75,8 @@ export class NodemailerOtpAuthStrategy implements AuthStrategy {
     return bcrypt.compare(credential, otp.hashedCode);
   }
 
-  public async consume(identity: string): Promise<void> {
+  public consume(identity: string): Promise<void> {
     this.pending.delete(identity);
+    return Promise.resolve();
   }
 }

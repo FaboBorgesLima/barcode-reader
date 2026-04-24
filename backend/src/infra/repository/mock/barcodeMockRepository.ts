@@ -5,11 +5,11 @@ import { BarcodeRepository } from '../../../repository/barcodeRepository';
 export class BarcodeMockRepository implements BarcodeRepository {
   private store = new Map<string, Barcode>();
 
-  async getBarcodeById(id: string): Promise<Barcode | null> {
-    return this.store.get(id) ?? null;
+  getBarcodeById(id: string): Promise<Barcode | null> {
+    return Promise.resolve(this.store.get(id) ?? null);
   }
 
-  async createBarcode(barcode: Barcode): Promise<Barcode> {
+  createBarcode(barcode: Barcode): Promise<Barcode> {
     const created = new Barcode(
       randomUUID(),
       barcode.value,
@@ -17,32 +17,37 @@ export class BarcodeMockRepository implements BarcodeRepository {
       barcode.quantity,
     );
     this.store.set(created.id!, created);
-    return created;
+    return Promise.resolve(created);
   }
 
-  async updateBarcode(barcode: Barcode): Promise<Barcode> {
+  updateBarcode(barcode: Barcode): Promise<Barcode> {
     this.store.set(barcode.id!, barcode);
-    return barcode;
+    return Promise.resolve(barcode);
   }
 
-  async deleteBarcode(id: string): Promise<void> {
+  deleteBarcode(id: string): Promise<void> {
     this.store.delete(id);
+    return Promise.resolve();
   }
 
-  async getRoomBarcodes(
+  getRoomBarcodes(
     roomId: string,
     page: number,
     pageSize: number,
   ): Promise<Barcode[]> {
     const all = [...this.store.values()].filter((b) => b.roomId === roomId);
-    return all.slice((page - 1) * pageSize, page * pageSize);
+    return Promise.resolve(all.slice((page - 1) * pageSize, page * pageSize));
   }
 
-  async exportAllBarcodes(roomId: string): Promise<Barcode[]> {
-    return [...this.store.values()].filter((b) => b.roomId === roomId);
+  exportAllBarcodes(roomId: string): Promise<Barcode[]> {
+    return Promise.resolve(
+      [...this.store.values()].filter((b) => b.roomId === roomId),
+    );
   }
 
-  async countBarcodes(roomId: string): Promise<number> {
-    return [...this.store.values()].filter((b) => b.roomId === roomId).length;
+  countBarcodes(roomId: string): Promise<number> {
+    return Promise.resolve(
+      [...this.store.values()].filter((b) => b.roomId === roomId).length,
+    );
   }
 }

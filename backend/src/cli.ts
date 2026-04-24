@@ -44,7 +44,7 @@ function parseFlag<T extends string>(
 const db = parseFlag<DbBackend>('db', DB_BACKENDS, 'mock');
 const auth = parseFlag<AuthStrategyType>('auth', AUTH_STRATEGIES, 'mock');
 
-(async () => {
+void (async () => {
   const { userRepo, roomRepo, barcodeRepo, prisma } =
     await createRepositories(db);
   console.log(`[DB]   ${db}`);
@@ -81,8 +81,12 @@ const auth = parseFlag<AuthStrategyType>('auth', AUTH_STRATEGIES, 'mock');
       await prisma.$disconnect();
       process.exit(0);
     };
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', () => {
+      void shutdown();
+    });
+    process.on('SIGTERM', () => {
+      void shutdown();
+    });
   }
 
   new Router()

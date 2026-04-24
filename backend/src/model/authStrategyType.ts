@@ -1,3 +1,3 @@
 export enum AuthStrategyType {
-    EmailOtp = "email_otp",
+  EmailOtp = 'email_otp',
 }

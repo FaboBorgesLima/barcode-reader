@@ -9,18 +9,12 @@ export class UserService {
     return await this.userRepository.getUserById(id);
   }
 
-  public async canUpdateUser(
-    user: User | null,
-    userId: string,
-  ): Promise<boolean> {
-    return user !== null && user.id === userId;
+  public canUpdateUser(user: User | null, userId: string): Promise<boolean> {
+    return Promise.resolve(user !== null && user.id === userId);
   }
 
-  public async canDeleteUser(
-    user: User | null,
-    userId: string,
-  ): Promise<boolean> {
-    return user !== null && user.id === userId;
+  public canDeleteUser(user: User | null, userId: string): Promise<boolean> {
+    return Promise.resolve(user !== null && user.id === userId);
   }
 
   public async updateUser(id: string, name: string): Promise<User> {

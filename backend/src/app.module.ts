@@ -7,7 +7,6 @@ import { RoomModule } from './module/roomModule';
 import { BarcodeModule } from './module/barcodeModule';
 import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis from '@keyv/redis';
-import { Keyv } from 'keyv';
 
 @Module({
   imports: [
@@ -19,11 +18,9 @@ import { Keyv } from 'keyv';
     BarcodeModule,
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async () => {
-        return {
-          stores: [new KeyvRedis(process.env.REDIS_URL)],
-        };
-      },
+      useFactory: () => ({
+        stores: [new KeyvRedis(process.env.REDIS_URL)],
+      }),
     }),
   ],
 })

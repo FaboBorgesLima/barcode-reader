@@ -10,6 +10,7 @@ import { AuthService } from '../service/authService';
 import { AuthHttpController } from '../interface/http/controller/authHttpController';
 import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
 import { EmailRateLimiterGuard } from '../infra/auth/emailRateLimiterGuard';
+import type { StringValue } from 'ms';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { EmailRateLimiterGuard } from '../infra/auth/emailRateLimiterGuard';
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: config.get<string>('JWT_EXPIRES_IN', '7d') as any,
+          expiresIn: config.get<StringValue>('JWT_EXPIRES_IN', '7d'),
         },
       }),
     }),

@@ -8,21 +8,21 @@ import { JwtTokenService } from '../infra/auth/jwtTokenService';
 import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
 
 @Module({
-    imports: [PrismaModule, AuthModule],
-    controllers: [RoomHttpController],
-    providers: [
-        PrismaRoomRepository,
-        {
-            provide: RoomService,
-            useFactory: (repo: PrismaRoomRepository) => new RoomService(repo),
-            inject: [PrismaRoomRepository],
-        },
-        {
-            provide: JwtAuthGuard,
-            useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
-            inject: [JwtTokenService],
-        },
-    ],
-    exports: [RoomService],
+  imports: [PrismaModule, AuthModule],
+  controllers: [RoomHttpController],
+  providers: [
+    PrismaRoomRepository,
+    {
+      provide: RoomService,
+      useFactory: (repo: PrismaRoomRepository) => new RoomService(repo),
+      inject: [PrismaRoomRepository],
+    },
+    {
+      provide: JwtAuthGuard,
+      useFactory: (token: JwtTokenService) => new JwtAuthGuard(token),
+      inject: [JwtTokenService],
+    },
+  ],
+  exports: [RoomService],
 })
 export class RoomModule {}

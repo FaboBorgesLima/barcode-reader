@@ -22,7 +22,8 @@ export class MockAuthStrategy implements AuthStrategy {
     return bcrypt.compare(credential, expected);
   }
 
-  async consume(identity: string): Promise<void> {
+  consume(identity: string): Promise<void> {
     this.pending.delete(identity);
+    return Promise.resolve();
   }
 }
