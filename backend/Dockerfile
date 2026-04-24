@@ -24,7 +24,7 @@ RUN npx prisma generate
 
 # Source is bind-mounted at runtime by docker-compose — do not COPY here
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:dev"]
+CMD ["sh", "-c", "npm run start:dev"]
 
 # ── Production stage ──────────────────────────────────────────────────────────
 FROM node:24-alpine AS runner
@@ -44,4 +44,4 @@ COPY prisma ./prisma
 EXPOSE 3000
 
 # Run migrations then start the pre-compiled app — no TypeScript compiler involved
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main"]
+CMD ["sh", "-c", "node dist/main"]
