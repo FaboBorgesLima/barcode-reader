@@ -1,6 +1,6 @@
-package com.example.barcodescannerandsheetexport.network
+package com.faboborgeslima.barcode_scanner.network
 
-import com.example.barcodescannerandsheetexport.data.SessionManager
+import com.faboborgeslima.barcode_scanner.data.SessionManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response

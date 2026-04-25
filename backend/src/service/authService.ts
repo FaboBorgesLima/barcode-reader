@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { DomainError } from '../error/domainError';
 import { User } from '../model/user';
 import { UserRepository } from '../repository/userRepository';
@@ -5,6 +6,8 @@ import { AuthStrategy } from './authStrategy';
 import { TokenService } from './tokenService';
 
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   public constructor(
     protected userRepository: UserRepository,
     protected authStrategy: AuthStrategy,
@@ -12,6 +15,7 @@ export class AuthService {
   ) {}
 
   public async initiateAuth(identity: string): Promise<void> {
+    this.logger.log(`Initiating auth for ${identity}`);
     await this.authStrategy.initiate(identity);
   }
 
@@ -20,13 +24,19 @@ export class AuthService {
   }
 
   public async login(email: string, credential: string): Promise<string> {
-    if (!(await this.authStrategy.verify(email, credential)))
+    if (!(await this.authStrategy.verify(email, credential))) {
+      this.logger.warn(`Login failed for ${email}: invalid credential`);
       throw this.getGenericError();
+    }
 
     const user = await this.userRepository.getUserByEmail(email);
-    if (!user) throw this.getGenericError();
+    if (!user) {
+      this.logger.warn(`Login failed for ${email}: user not found`);
+      throw this.getGenericError();
+    }
 
     await this.authStrategy.consume(email);
+    this.logger.log(`Login successful for ${email} (userId=${user.id})`);
 
     return this.tokenService.generateToken({
       userId: user.id!,
@@ -39,16 +49,26 @@ export class AuthService {
     email: string,
     credential: string,
   ): Promise<string> {
-    if (!(await this.authStrategy.verify(email, credential)))
+    if (!(await this.authStrategy.verify(email, credential))) {
+      this.logger.warn(`Registration failed for ${email}: invalid credential`);
       throw this.getGenericError();
+    }
 
     const existing = await this.userRepository.getUserByEmail(email);
-    if (existing) throw this.getGenericError();
+    if (existing) {
+      this.logger.warn(
+        `Registration failed for ${email}: email already in use`,
+      );
+      throw this.getGenericError();
+    }
 
     await this.authStrategy.consume(email);
 
     const created = await this.userRepository.createUser(
       new User(undefined, name, email),
+    );
+    this.logger.log(
+      `Registration successful for ${email} (userId=${created.id})`,
     );
 
     return this.tokenService.generateToken({
@@ -58,6 +78,7 @@ export class AuthService {
   }
 
   public async logout(token: string): Promise<void> {
+    this.logger.log('User logout: revoking token');
     await this.tokenService.revokeToken(token);
   }
 }

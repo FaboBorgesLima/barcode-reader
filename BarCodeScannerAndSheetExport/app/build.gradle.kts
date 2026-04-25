@@ -11,15 +11,15 @@ val localProps = Properties().also { props ->
 }
 
 android {
-    namespace = "com.example.barcodescannerandsheetexport"
+    namespace = "com.faboborgeslima.barcode_scanner"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.barcodescannerandsheetexport"
+        applicationId = "com.faboborgeslima.barcode_scanner"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,11 +27,11 @@ android {
     buildTypes {
         debug {
             // local.properties overrides the emulator default for debug builds
-            val debugUrl = localProps.getProperty("api.base.url", "http://10.0.2.2:3000/api/")
+            val debugUrl = localProps.getProperty("api.base.url", "http://10.0.2.2:3000/")
             buildConfigField("String", "API_BASE_URL", "\"$debugUrl\"")
         }
         release {
-            buildConfigField("String", "API_BASE_URL", "\"https://scanner.titanforgesystems.com.br/api/\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://scanner.titanforgesystems.com.br/\"")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

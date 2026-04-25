@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport
+package com.faboborgeslima.barcode_scanner
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.fragment.findNavController
-import com.example.barcodescannerandsheetexport.databinding.FragmentLoginBinding
-import com.example.barcodescannerandsheetexport.network.InitiateAuthDto
-import com.example.barcodescannerandsheetexport.network.LoginDto
-import com.example.barcodescannerandsheetexport.network.RegisterDto
+import com.faboborgeslima.barcode_scanner.databinding.FragmentLoginBinding
+import com.faboborgeslima.barcode_scanner.network.InitiateAuthDto
+import com.faboborgeslima.barcode_scanner.network.LoginDto
+import com.faboborgeslima.barcode_scanner.network.RegisterDto
 
 class LoginFragment : BaseFragment() {
 
@@ -74,6 +74,12 @@ class LoginFragment : BaseFragment() {
         binding.otpInput.text?.clear()
     }
 
+    // Always unfreeze the UI when an API call fails in this fragment
+    override fun onApiError(e: Exception) {
+        setLoading(false)
+        super.onApiError(e)
+    }
+
     private fun sendOtp() {
         val email = binding.emailInput.text.toString().trim()
         if (email.isBlank()) {
@@ -84,12 +90,15 @@ class LoginFragment : BaseFragment() {
 
         launchApi {
             setLoading(true)
-            io { api().authApi.initiate(InitiateAuthDto(email)) }
-            otpSent = true
-            binding.otpLayout.visibility = View.VISIBLE
-            binding.actionButton.visibility = View.VISIBLE
-            toast(getString(R.string.otp_sent))
-            setLoading(false)
+            try {
+                io { api().authApi.initiate(InitiateAuthDto(email)) }
+                otpSent = true
+                binding.otpLayout.visibility = View.VISIBLE
+                binding.actionButton.visibility = View.VISIBLE
+                toast(getString(R.string.otp_sent))
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
@@ -109,22 +118,29 @@ class LoginFragment : BaseFragment() {
         binding.otpLayout.error = null
 
         launchApi {
-            setLoading(true)
-            val token = if (isRegisterMode) {
-                val name = binding.nameInput.text.toString().trim()
-                if (name.isBlank()) {
+            // Validate name before touching the network
+            val name: String? = if (isRegisterMode) {
+                val n = binding.nameInput.text.toString().trim()
+                if (n.isBlank()) {
                     binding.nameLayout.error = getString(R.string.validation_name_required)
-                    setLoading(false)
-                    return@launchApi
+                    return@launchApi          // works fine — directly inside launchApi lambda
                 }
-                io { api().authApi.register(RegisterDto(name, email, otp)).token }
-            } else {
-                io { api().authApi.login(LoginDto(email, otp)).token }
+                n
+            } else null
+
+            setLoading(true)
+            try {
+                val token = if (isRegisterMode) {
+                    io { api().authApi.register(RegisterDto(name!!, email, otp)).token }
+                } else {
+                    io { api().authApi.login(LoginDto(email, otp)).token }
+                }
+                sessionManager.saveToken(token)
+                toast(getString(if (isRegisterMode) R.string.register_success else R.string.login_success))
+                findNavController().navigate(R.id.action_login_to_rooms)
+            } finally {
+                setLoading(false)
             }
-            sessionManager.saveToken(token)
-            toast(getString(if (isRegisterMode) R.string.register_success else R.string.login_success))
-            setLoading(false)
-            findNavController().navigate(R.id.action_login_to_rooms)
         }
     }
 

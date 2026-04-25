@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport.network
+package com.faboborgeslima.barcode_scanner.network
 
 import retrofit2.http.Body
 import retrofit2.http.DELETE

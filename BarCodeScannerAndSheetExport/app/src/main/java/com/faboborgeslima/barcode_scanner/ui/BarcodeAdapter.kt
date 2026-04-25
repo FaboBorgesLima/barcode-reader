@@ -1,10 +1,10 @@
-package com.example.barcodescannerandsheetexport.ui
+package com.faboborgeslima.barcode_scanner.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.barcodescannerandsheetexport.databinding.ItemBarcodeBinding
-import com.example.barcodescannerandsheetexport.network.Barcode
+import com.faboborgeslima.barcode_scanner.databinding.ItemBarcodeBinding
+import com.faboborgeslima.barcode_scanner.network.Barcode
 
 class BarcodeAdapter(
     private val onIncrement: (Barcode) -> Unit,
@@ -31,7 +31,7 @@ class BarcodeAdapter(
         fun bind(barcode: Barcode) {
             b.barcodeValue.text = barcode.value
             b.barcodeQuantity.text = b.root.context.getString(
-                com.example.barcodescannerandsheetexport.R.string.quantity_label,
+                com.faboborgeslima.barcode_scanner.R.string.quantity_label,
                 barcode.quantity
             )
             b.incrementButton.setOnClickListener { onIncrement(barcode) }

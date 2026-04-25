@@ -4,6 +4,9 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
+# prisma schema/config needed because npm ci triggers postinstall (prisma generate)
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci
 
 COPY . .
@@ -16,10 +19,11 @@ FROM node:24-alpine AS dev
 WORKDIR /app
 
 COPY package*.json ./
+# prisma schema/config needed because npm ci triggers postinstall (prisma generate)
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci
 
-# prisma schema needed for generate inside the container
-COPY prisma ./prisma
 RUN npx prisma generate
 
 # Source is bind-mounted at runtime by docker-compose — do not COPY here
@@ -32,6 +36,9 @@ FROM node:24-alpine AS runner
 WORKDIR /app
 
 COPY package*.json ./
+# prisma schema/config needed because npm ci triggers postinstall (prisma generate)
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci --omit=dev
 
 # Compiled output
@@ -39,9 +46,7 @@ COPY --from=builder /app/dist ./dist
 # Prisma generated client
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 # Migrations (needed for migrate deploy at startup)
-COPY prisma ./prisma
-# Prisma config (provides datasource.url — DATABASE_URL is injected by K8s/docker-compose)
-COPY prisma.config.ts ./
+# Prisma config and migrations already copied above
 
 EXPOSE 3000
 

@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport
+package com.faboborgeslima.barcode_scanner
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,11 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.barcodescannerandsheetexport.databinding.FragmentRoomDetailBinding
-import com.example.barcodescannerandsheetexport.network.Barcode
-import com.example.barcodescannerandsheetexport.network.CreateBarcodeDto
-import com.example.barcodescannerandsheetexport.network.UpdateBarcodeDto
-import com.example.barcodescannerandsheetexport.ui.BarcodeAdapter
+import com.faboborgeslima.barcode_scanner.databinding.FragmentRoomDetailBinding
+import com.faboborgeslima.barcode_scanner.network.Barcode
+import com.faboborgeslima.barcode_scanner.network.CreateBarcodeDto
+import com.faboborgeslima.barcode_scanner.network.UpdateBarcodeDto
+import com.faboborgeslima.barcode_scanner.ui.BarcodeAdapter
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import java.io.File
 

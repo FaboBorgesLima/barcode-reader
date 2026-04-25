@@ -11,6 +11,11 @@ import { AuthHttpController } from '../interface/http/controller/authHttpControl
 import { JwtAuthGuard } from '../infra/auth/jwtAuthGuard';
 import { EmailRateLimiterGuard } from '../infra/auth/emailRateLimiterGuard';
 import type { StringValue } from 'ms';
+import { AuthStrategy } from 'src/service/authStrategy';
+import {
+  AuthStrategyType,
+  createAuthStrategy,
+} from 'src/factory/authStrategyFactory';
 
 @Module({
   imports: [
@@ -33,19 +38,21 @@ import type { StringValue } from 'ms';
     PrismaUserRepository,
     { provide: 'UserRepository', useExisting: PrismaUserRepository },
     {
-      provide: OtpAuthStrategy,
-      useFactory: (otpRepo: RedisOtpRepository) => new OtpAuthStrategy(otpRepo),
-      inject: [RedisOtpRepository],
+      provide: AuthStrategy,
+      useFactory: () =>
+        createAuthStrategy(
+          (process.env.AUTH_STRATEGY as AuthStrategyType) || 'mock',
+        ),
     },
     JwtTokenService,
     {
       provide: AuthService,
       useFactory: (
         userRepo: PrismaUserRepository,
-        strategy: OtpAuthStrategy,
+        strategy: AuthStrategy,
         token: JwtTokenService,
       ) => new AuthService(userRepo, strategy, token),
-      inject: [PrismaUserRepository, OtpAuthStrategy, JwtTokenService],
+      inject: [PrismaUserRepository, AuthStrategy, JwtTokenService],
     },
     {
       provide: JwtAuthGuard,

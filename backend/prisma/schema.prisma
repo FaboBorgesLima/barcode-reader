@@ -27,4 +27,6 @@ model Barcode {
   roomId   String
   quantity Int    @default(1)
   room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([value, roomId])
 }

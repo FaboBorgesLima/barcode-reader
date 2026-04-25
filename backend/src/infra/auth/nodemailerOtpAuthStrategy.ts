@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { Logger } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 import { AuthStrategy } from '../../service/authStrategy';
@@ -18,6 +19,7 @@ interface SmtpConfig {
 }
 
 export class NodemailerOtpAuthStrategy implements AuthStrategy {
+  private readonly logger = new Logger(NodemailerOtpAuthStrategy.name);
   private readonly pending = new Map<string, PendingOtp>();
   private readonly transporter: Transporter;
   private readonly from: string;
@@ -55,28 +57,57 @@ export class NodemailerOtpAuthStrategy implements AuthStrategy {
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
     this.pending.set(identity, { hashedCode, expiresAt });
+    this.logger.log(
+      `OTP initiated for ${identity}, expires at ${expiresAt.toISOString()}`,
+    );
 
-    await this.transporter.sendMail({
-      from: this.from,
-      to: identity,
-      subject: 'Your login code',
-      text: `Your one-time login code is: ${code}\n\nIt expires in 10 minutes.`,
-      html: `<p>Your one-time login code is: <strong>${code}</strong></p><p>It expires in 10 minutes.</p>`,
-    });
+    try {
+      await this.transporter.sendMail({
+        from: this.from,
+        to: identity,
+        subject: 'Your login code',
+        text: `Your one-time login code is: ${code}\n\nIt expires in 10 minutes.`,
+        html: `<p>Your one-time login code is: <strong>${code}</strong></p><p>It expires in 10 minutes.</p>`,
+      });
+      this.logger.log(`OTP email sent successfully to ${identity}`);
+    } catch (err) {
+      this.logger.error(
+        `Failed to send OTP email to ${identity}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+      throw err;
+    }
   }
 
   public async verify(identity: string, credential: string): Promise<boolean> {
     const otp = this.pending.get(identity);
-    if (!otp) return false;
-    if (otp.expiresAt < new Date()) {
-      this.pending.delete(identity);
+    if (!otp) {
+      this.logger.warn(
+        `OTP verification failed for ${identity}: no pending OTP found`,
+      );
       return false;
     }
-    return bcrypt.compare(credential, otp.hashedCode);
+    if (otp.expiresAt < new Date()) {
+      this.pending.delete(identity);
+      this.logger.warn(
+        `OTP verification failed for ${identity}: OTP expired at ${otp.expiresAt.toISOString()}`,
+      );
+      return false;
+    }
+    const valid = await bcrypt.compare(credential, otp.hashedCode);
+    if (valid) {
+      this.logger.log(`OTP verification succeeded for ${identity}`);
+    } else {
+      this.logger.warn(
+        `OTP verification failed for ${identity}: invalid credential`,
+      );
+    }
+    return valid;
   }
 
   public consume(identity: string): Promise<void> {
     this.pending.delete(identity);
+    this.logger.debug(`OTP consumed for ${identity}`);
     return Promise.resolve();
   }
 }

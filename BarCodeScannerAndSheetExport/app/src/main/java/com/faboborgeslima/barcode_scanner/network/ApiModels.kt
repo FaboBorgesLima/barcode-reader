@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport.network
+package com.faboborgeslima.barcode_scanner.network
 
 data class InitiateAuthDto(val email: String)
 

@@ -3,3 +3,5 @@ export interface AuthStrategy {
   verify(identity: string, credential: string): Promise<boolean>;
   consume(identity: string): Promise<void>;
 }
+
+export const AuthStrategy = Symbol('AuthStrategy');

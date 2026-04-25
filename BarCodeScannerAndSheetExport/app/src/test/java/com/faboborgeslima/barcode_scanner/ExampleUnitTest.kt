@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport
+package com.faboborgeslima.barcode_scanner
 
 import org.junit.Test
 

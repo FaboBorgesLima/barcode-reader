@@ -125,7 +125,7 @@ The Android app (`BarCodeScannerAndSheetExport`) talks to the backend over HTTPS
 **`local.properties`** controls the API URL during builds:
 
 ```properties
-api.base.url=https://scanner.titanforgesystems.com.br/api/
+api.base.url=https://scanner.titanforgesystems.com.br/
 ```
 
 For the emulator during local dev use `http://10.0.2.2:3000/api/` (default when the key is absent).

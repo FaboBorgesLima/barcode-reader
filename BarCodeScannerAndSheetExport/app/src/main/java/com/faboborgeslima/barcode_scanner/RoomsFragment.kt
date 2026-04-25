@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport
+package com.faboborgeslima.barcode_scanner
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,10 +15,10 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.barcodescannerandsheetexport.databinding.FragmentRoomsBinding
-import com.example.barcodescannerandsheetexport.network.CreateRoomDto
-import com.example.barcodescannerandsheetexport.network.Room
-import com.example.barcodescannerandsheetexport.ui.RoomAdapter
+import com.faboborgeslima.barcode_scanner.databinding.FragmentRoomsBinding
+import com.faboborgeslima.barcode_scanner.network.CreateRoomDto
+import com.faboborgeslima.barcode_scanner.network.Room
+import com.faboborgeslima.barcode_scanner.ui.RoomAdapter
 
 class RoomsFragment : BaseFragment() {
 

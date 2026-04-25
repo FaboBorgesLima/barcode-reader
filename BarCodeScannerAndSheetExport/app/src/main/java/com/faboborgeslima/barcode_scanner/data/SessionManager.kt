@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport.data
+package com.faboborgeslima.barcode_scanner.data
 
 import android.content.Context
 import androidx.core.content.edit

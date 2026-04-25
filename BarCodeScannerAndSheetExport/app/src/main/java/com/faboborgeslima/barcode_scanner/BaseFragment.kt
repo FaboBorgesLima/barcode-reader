@@ -1,11 +1,11 @@
-package com.example.barcodescannerandsheetexport
+package com.faboborgeslima.barcode_scanner
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.barcodescannerandsheetexport.data.SessionManager
-import com.example.barcodescannerandsheetexport.network.ApiClient
-import com.example.barcodescannerandsheetexport.network.BackendApi
+import com.faboborgeslima.barcode_scanner.data.SessionManager
+import com.faboborgeslima.barcode_scanner.network.ApiClient
+import com.faboborgeslima.barcode_scanner.network.BackendApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -1,4 +1,4 @@
-package com.example.barcodescannerandsheetexport
+package com.faboborgeslima.barcode_scanner
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +7,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.example.barcodescannerandsheetexport.databinding.ActivityMainBinding
+import com.faboborgeslima.barcode_scanner.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 

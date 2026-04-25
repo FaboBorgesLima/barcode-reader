@@ -1,10 +1,10 @@
-package com.example.barcodescannerandsheetexport.ui
+package com.faboborgeslima.barcode_scanner.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.barcodescannerandsheetexport.databinding.ItemRoomBinding
-import com.example.barcodescannerandsheetexport.network.Room
+import com.faboborgeslima.barcode_scanner.databinding.ItemRoomBinding
+import com.faboborgeslima.barcode_scanner.network.Room
 
 class RoomAdapter(
     private val onRoomClick: (Room) -> Unit,
