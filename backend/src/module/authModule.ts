@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule } from './prismaModule';
 import { RedisOtpRepository } from '../infra/repository/redisOtpRepository';
-import { OtpAuthStrategy } from '../infra/auth/otpAuthStrategy';
 import { JwtTokenService } from '../infra/auth/jwtTokenService';
 import { PrismaUserRepository } from '../infra/repository/prismaUserRepository';
 import { AuthService } from '../service/authService';
