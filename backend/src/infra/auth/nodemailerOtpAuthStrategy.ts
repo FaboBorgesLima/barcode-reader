@@ -27,9 +27,7 @@ export class NodemailerOtpAuthStrategy implements AuthStrategy {
   public constructor(config: SmtpConfig) {
     this.from = config.from;
     this.transporter = createTransport({
-      host: config.host,
-      port: config.port,
-      secure: config.secure,
+      service: 'Gmail',
       auth: { user: config.user, pass: config.pass },
     });
   }
