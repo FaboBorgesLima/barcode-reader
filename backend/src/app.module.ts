@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggingMiddleware } from './infra/middleware/loggingMiddleware';
 import { PrismaModule } from './module/prismaModule';
 import { AuthModule } from './module/authModule';
 import { UserModule } from './module/userModule';
@@ -26,4 +27,8 @@ import KeyvRedis from '@keyv/redis';
     }),
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggingMiddleware).forRoutes('*');
+  }
+}
